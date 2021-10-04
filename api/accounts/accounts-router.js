@@ -1,5 +1,5 @@
 const router = require('express').Router();
-const { checkAccountId } = require('./accounts-middleware')
+const { checkAccountId, checkAccountPayload, checkAccountNameUnique } = require('./accounts-middleware')
 const Account = require('./accounts-model');
 
 router.get('/', async (req, res, next) => {
@@ -21,11 +21,19 @@ router.get('/:id', checkAccountId, (req, res) => {
   } else {
     res.status(404).json({ message: "account not found" });
   }
-
 })
 
-router.post('/', (req, res, next) => {
-  // DO YOUR MAGIC
+router.post('/', checkAccountPayload, checkAccountNameUnique, async (req, res, next) => {
+  try {
+    if (req.error) {
+      res.status(400).json(req.error);
+    } else {
+      const newAccount = await Account.create(req.account);
+      res.status(201).json(newAccount);
+    }
+  } catch (err) {
+    next(err);
+  }
 })
 
 router.put('/:id', (req, res, next) => {
