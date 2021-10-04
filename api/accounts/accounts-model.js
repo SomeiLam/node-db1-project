@@ -14,12 +14,15 @@ const create = account => {
   return db('accounts')
     .insert(account)
     .then(ids => {
-      return getById(ids[0])
-    })
+      return getById(ids[0]);
+    });
 }
 
-const updateById = (id, account) => {
-  // DO YOUR MAGIC
+const updateById = async (id, account) => {
+  await db('accounts')
+    .where('id', id)
+    .update(account);
+  return getById(id);
 }
 
 const deleteById = id => {

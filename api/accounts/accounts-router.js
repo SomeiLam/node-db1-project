@@ -28,7 +28,7 @@ router.post('/', checkAccountPayload, checkAccountNameUnique, async (req, res, n
     if (req.error) {
       res.status(400).json(req.error);
     } else {
-      const newAccount = await Account.create(req.account);
+      const newAccount = await Account.create(req.body);
       res.status(201).json(newAccount);
     }
   } catch (err) {
@@ -36,8 +36,20 @@ router.post('/', checkAccountPayload, checkAccountNameUnique, async (req, res, n
   }
 })
 
-router.put('/:id', (req, res, next) => {
-  // DO YOUR MAGIC
+router.put('/:id', checkAccountId, checkAccountPayload, checkAccountNameUnique, (req, res, next) => {
+  if (req.account) {
+    if (req.error === undefined) {
+      Account.updateById(req.params.id, req.body)
+        .then(account => {
+          res.status(200).json(account);
+        })
+        .catch(next)
+    } else {
+      res.status(400).json(req.error);
+    }
+  } else {
+    res.status(404).json({ message: "account not found" });
+  }
 });
 
 router.delete('/:id', (req, res, next) => {

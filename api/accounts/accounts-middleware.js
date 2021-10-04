@@ -1,17 +1,4 @@
-const yup = require('yup');
 const Account = require('./accounts-model');
-
-const accountSchema = yup.object().shape({
-  name: yup
-    .string()
-    .typeError('name must be a string')
-    .trim()
-    .required('name is required'),
-  budget: yup
-    .number()
-    .typeError('budget must be a number')
-    .required('budget is required')
-})
 
 async function checkAccountPayload(req, res, next) {
   try {
@@ -32,7 +19,7 @@ async function checkAccountPayload(req, res, next) {
       next();
     }
     const trimmed = req.body.name.trim();
-    req.account = { name: trimmed, budget: req.body.budget };
+    req.body = { name: trimmed, budget: req.body.budget };
     next();
   } catch (error) {
     next(error)
