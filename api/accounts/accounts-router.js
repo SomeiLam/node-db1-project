@@ -52,8 +52,17 @@ router.put('/:id', checkAccountId, checkAccountPayload, checkAccountNameUnique, 
   }
 });
 
-router.delete('/:id', (req, res, next) => {
-  // DO YOUR MAGIC
+router.delete('/:id', checkAccountId, async (req, res, next) => {
+  try {
+    if (req.account) {
+      const account = await Account.deleteById(req.params.id);
+      res.status(200).json(account);
+    } else {
+      res.status(404).json({ message: "account not found" });
+    }
+  } catch (err) {
+    next(err);
+  }
 })
 
 router.use((err, req, res, next) => { // eslint-disable-line
